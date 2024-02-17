@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<dependency>
+    <groupId>org.springframework.security</groupId>
+    <artifactId>spring-security-web</artifactId>
+    <version>3.0.8.RELEASE</version> <!-- 사용하는 Spring Security 버전에 맞게 변경 -->
+</dependency>
