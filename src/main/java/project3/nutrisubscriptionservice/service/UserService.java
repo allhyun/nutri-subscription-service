@@ -10,7 +10,7 @@ import project3.nutrisubscriptionservice.repository.UserRepository;
 
 public class UserService {
     @Autowired
-    UserRepository userRepository;
+    private  UserRepository userRepository;
 
     //암호화 객체 생성
     @Autowired

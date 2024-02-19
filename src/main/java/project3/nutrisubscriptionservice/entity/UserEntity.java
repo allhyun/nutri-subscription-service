@@ -2,22 +2,20 @@ package project3.nutrisubscriptionservice.entity;
 
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 @Entity
-@NoArgsConstructor
-@Getter
 @Builder
+@NoArgsConstructor
 @AllArgsConstructor
+@Getter
+@Setter
 @Table(name="user")
 public class UserEntity {
     @Id//pk
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name="id", nullable = false)
-    private int id;
+    private long id;
 
     @Column(name="email", nullable = false,length=50)
     private String email;
@@ -28,13 +26,13 @@ public class UserEntity {
     @Column(name = "name", nullable = false, length = 10)
     private String name;
 
-    @Column(name = "phone", length = 13)
+    @Column(name = "phone",nullable = false, length = 13)
     private String phone;
 
-    @Column(name = "zipcode", length = 5)
+    @Column(name = "zipcode",nullable = true, length = 5)
     private String zipcode;
 
-    @Column(name = "address", length = 255)
+    @Column(name = "address",nullable = true,  length = 255)
     private String address;
 
 }

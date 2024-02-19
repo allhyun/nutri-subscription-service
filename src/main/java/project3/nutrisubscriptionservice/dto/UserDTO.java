@@ -3,10 +3,11 @@ package project3.nutrisubscriptionservice.dto;
 
 import lombok.Builder;
 import lombok.Getter;
-import lombok.Setter;
+import lombok.NoArgsConstructor;
 
 @Getter
 @Builder
+//@NoArgsConstructor
 public class UserDTO {
 
     private long id;
@@ -17,3 +18,4 @@ public class UserDTO {
     private String zipcode;
     private String address;
 }
+
