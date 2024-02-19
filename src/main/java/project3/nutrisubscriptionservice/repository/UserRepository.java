@@ -8,7 +8,7 @@ import project3.nutrisubscriptionservice.entity.UserEntity;
 import java.util.List;
 
 @Repository
-public interface UserRepository extends JpaRepository<UserEntity , Integer> {
+public interface UserRepository extends JpaRepository<UserEntity , Long> {
 
     UserEntity findByEmail(String email);
 
