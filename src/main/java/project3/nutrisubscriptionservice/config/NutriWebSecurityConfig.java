@@ -19,7 +19,7 @@ import java.util.Arrays;
 
 @Configuration
 @EnableWebSecurity
-public class WebSecurityConfig{
+public class NutriWebSecurityConfig{
     @Autowired
     CustomAuthFilter customAuthFilter;
 
