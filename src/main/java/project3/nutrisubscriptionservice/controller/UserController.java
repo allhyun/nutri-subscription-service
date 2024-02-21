@@ -7,17 +7,21 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import project3.nutrisubscriptionservice.dto.ChangePasswordDTO;
 import project3.nutrisubscriptionservice.dto.UserDTO;
 import project3.nutrisubscriptionservice.dto.UserProfileDTO;
 import project3.nutrisubscriptionservice.entity.UserEntity;
+import project3.nutrisubscriptionservice.repository.UserRepository;
 import project3.nutrisubscriptionservice.service.UserProfileService;
 import project3.nutrisubscriptionservice.service.UserService;
 
-@Controller
+@RestController
 @Getter
 @RequestMapping("/user")
 @Slf4j
@@ -26,6 +30,10 @@ public class UserController {
     UserService userService;
     @Autowired
     UserProfileService userProfileService;
+
+    @Autowired
+    private UserRepository userRepository;
+
 
     @Autowired
     BCryptPasswordEncoder passwordEncoder;
@@ -74,6 +82,7 @@ public class UserController {
                     .email(user.getEmail())
                     .name(user.getName())
                     .id(user.getId())
+                    .password(user.getPassword())
                     .build();
 
             //log.info
@@ -103,20 +112,33 @@ public class UserController {
         }
     }
 
-    @GetMapping("/{userId}/profile")
-    public ResponseEntity<UserProfileDTO> getUserProfile(@PathVariable("userId") Long userId) {
 
-        // userId를 사용하여 UserProfileDTO를 조회하고 반환하는 코드
+//회원정보 확인
+    @GetMapping("/profile/{userId}")
+    public ResponseEntity<UserProfileDTO> profilePage(@PathVariable Long userId, Model model) {
         UserProfileDTO userProfileDTO = userProfileService.getUserProfile(userId);
+        model.addAttribute("user", userProfileDTO);
         return ResponseEntity.ok(userProfileDTO);
     }
 
+    @PostMapping("/profile/update")
+    public String updateProfile(UserProfileDTO userProfileDTO) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+//        String userEmail = authentication.getName();
+//
+//        // 사용자의 이메일을 기반으로 사용자의 ID를 찾아옵니다.
+//        UserEntity userEntity = userRepository.findByEmail(userEmail)
+//                .orElseThrow(() -> new RuntimeException("User not found with email: " + userEmail));
 
-    //회원정보 수정 및 업데이트
-    @PutMapping("/{userId}/profile")
-    public ResponseEntity<UserProfileDTO> updateUserProfile(@PathVariable("userId") Long userId, @RequestBody UserProfileDTO userProfileDTO) {
-        userProfileService.updateUserProfile(userId , userProfileDTO);
-        return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+        Long userId = (Long) authentication.getPrincipal();
+        UserEntity user = userRepository.findById(userId)
+                .orElseThrow(() -> new RuntimeException("User not found with id: " + userId));
+//        Long userId = userEntity.getId();;
+
+        // 사용자의 ID와 프로필 DTO를 사용하여 프로필을 업데이트합니다.
+        userProfileService.updateUserProfile(userId, userProfileDTO);
+
+        return "redirect:/user/profile";
     }
 
 
