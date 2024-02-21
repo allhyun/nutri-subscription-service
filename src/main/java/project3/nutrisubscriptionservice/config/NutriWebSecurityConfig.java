@@ -19,7 +19,7 @@ import java.util.Arrays;
 
 @Configuration
 @EnableWebSecurity
-public class NutriWebSecurityConfig{
+public class WebSecurityConfig{
     @Autowired
     CustomAuthFilter customAuthFilter;
 
@@ -29,13 +29,13 @@ public class NutriWebSecurityConfig{
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception{
         http
-                .cors(Customizer.withDefaults())
-                .csrf(CsrfConfigurer::disable)
-                .formLogin( form -> form  // 로그인 페이지 지정
-                        .loginPage("/user/login")
-                        .defaultSuccessUrl("/",true)
-                        .permitAll()
-                ) // 폼 로그인 사용
+                .cors(Customizer.withDefaults()).csrf(CsrfConfigurer::disable)
+//                .csrf(CsrfConfigurer::disable)
+//                .formLogin( form -> form  // 로그인 페이지 지정
+//                        .loginPage("/user/login")
+//                        .defaultSuccessUrl("/",true)
+//                        .permitAll()
+//                ) // 폼 로그인 사용
                 // 로그인 페이지는 모든 사용자에게 허용
                 .logout( auth -> auth
                         .logoutUrl("/user/logout")
@@ -43,7 +43,8 @@ public class NutriWebSecurityConfig{
                             response.setStatus(200);
                         }))))
                 .authorizeHttpRequests(authorize -> authorize
-                        .requestMatchers("/user/**").permitAll()
+                        .requestMatchers("/user/**","/profile/**").permitAll()
+
                         .anyRequest().authenticated()//위에 나온 주소 말고 , 나머지 주소는 로그인이 필요하다.
 
                 );
