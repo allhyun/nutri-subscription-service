@@ -42,17 +42,10 @@ public class UserProfileService implements UserDetailsService {
         userEntity.setPassword(changePasswordDTO.getNewPassword());
         // 변경된 비밀번호 정보를 설정
 //        changePasswordDTO.setUpdatedPassword(changePasswordDTO.getNewPassword());
-
-
         userRepository.save(userEntity);
     }
 
-
-
     //회원정보 확인
-
-
-     //스프링이 로그인 요청을 가로챌 때, username과 password 변수 2개를 가로채는데 password는 // 우리는 username이 DB에 있는지만 확인해주면 된다.
 
     public UserDetails loadUserByUsername(String userEmail) throws UsernameNotFoundException {
         UserEntity userEntity = userRepository.findByEmail(userEmail);
@@ -70,18 +63,6 @@ public class UserProfileService implements UserDetailsService {
 
     }
 
-    // 회원정보 확인 메서드 추가
-//    public UserProfileDTO getUserProfileById(Long userId) {
-//        UserEntity userEntity = userRepository.findById(userId);
-//        if (userEntity == null) {
-//            throw new RuntimeException("해당 이메일로 등록된 사용자가 없습니다.");
-//        }
-//        return UserProfileDTO.fromUser(userEntity);
-//    }
-
-
-
-
     public UserProfileDTO getUserProfile(Long userId) {
         UserEntity userEntity = userRepository.findById(userId)
                 .orElseThrow(() -> new RuntimeException("유저정보를 찾을 수 없습니다.: " + userId));
@@ -91,14 +72,30 @@ public class UserProfileService implements UserDetailsService {
 
     public void updateUserProfile(Long userId, UserProfileDTO userProfileDTO) {
         UserEntity userEntity = userRepository.findById(userId)
-                .orElseThrow(() -> new RuntimeException("User not found with id: " + userId));
+                .orElseThrow(() -> new RuntimeException("아이디를 찾을 수 없음: " + userId));
 
-        userEntity.setEmail(userProfileDTO.getEmail());
-        userEntity.setName(userProfileDTO.getName());
-        userEntity.setPhone(userProfileDTO.getPhone());
-        userEntity.setZipcode(userProfileDTO.getZipcode());
-        userEntity.setAddress(userProfileDTO.getAddress());
+        // 이메일은 변경하지 않음
+        String originalEmail = userEntity.getEmail();
 
+        // 다른 필드 업데이트
+        if (userProfileDTO.getEmail() != null) {
+            userEntity.setEmail(userProfileDTO.getEmail());
+        }
+        if (userProfileDTO.getName() != null) {
+            userEntity.setName(userProfileDTO.getName());
+        }
+        if (userProfileDTO.getPhone() != null) {
+            userEntity.setPhone(userProfileDTO.getPhone());
+        }
+        if (userProfileDTO.getZipcode() != null) {
+            userEntity.setZipcode(userProfileDTO.getZipcode());
+        }
+        if (userProfileDTO.getAddress() != null) {
+            userEntity.setAddress(userProfileDTO.getAddress());
+        }
+
+        // 원래 이메일로 설정
+        userEntity.setEmail(originalEmail);
         userRepository.save(userEntity);
     }
 
