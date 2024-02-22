@@ -91,9 +91,6 @@ public class UserController {
 
             session.setAttribute("userId", user.getId());
 
-
-
-
             return ResponseEntity.ok().body(responseUserDTO);
         } catch (Exception e){
             return ResponseEntity.badRequest().body(e.getMessage());
@@ -121,37 +118,25 @@ public class UserController {
         return ResponseEntity.ok(userProfileDTO);
     }
 
-    @PostMapping("/profile/update")
-    public String updateProfile(UserProfileDTO userProfileDTO) {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-//        String userEmail = authentication.getName();
-//
-//        // 사용자의 이메일을 기반으로 사용자의 ID를 찾아옵니다.
-//        UserEntity userEntity = userRepository.findByEmail(userEmail)
-//                .orElseThrow(() -> new RuntimeException("User not found with email: " + userEmail));
-
-        Long userId = (Long) authentication.getPrincipal();
-        UserEntity user = userRepository.findById(userId)
-                .orElseThrow(() -> new RuntimeException("User not found with id: " + userId));
-//        Long userId = userEntity.getId();;
-
-        // 사용자의 ID와 프로필 DTO를 사용하여 프로필을 업데이트합니다.
-        userProfileService.updateUserProfile(userId, userProfileDTO);
-
-        return "redirect:/user/profile";
+    //회원정보 수정
+    @PostMapping("/profile/{userId}/update")
+    public ResponseEntity<String> updateProfile(@PathVariable Long userId, @RequestBody UserProfileDTO updatedProfile){
+        try{
+            userProfileService.updateUserProfile(userId, updatedProfile);
+            return ResponseEntity.ok("업데이트 성공");
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body("업데이트에 실패 " + e.getMessage());
+        }
     }
-
-
-
     //비밀번호 수정?
     @PostMapping("/{userId}/password")
     public ResponseEntity<?> changePassWord(@PathVariable("userId")Long userId, @RequestBody ChangePasswordDTO changePasswordDTO) {
         try {
             //ChangePasswordDTO chagePassword = new ChangePasswordDTO(changePasswordDTO.getCurrentPassword(), changePasswordDTO.getNewPassword());
             ChangePasswordDTO chagePassword = ChangePasswordDTO.builder()
-                            .currentPassword(changePasswordDTO.getCurrentPassword())
-                                    .newPassword(changePasswordDTO.getNewPassword())
-                                            .build();
+                    .currentPassword(changePasswordDTO.getCurrentPassword())
+                    .newPassword(changePasswordDTO.getNewPassword())
+                    .build();
             userProfileService.changePassword(userId, chagePassword);
 
             // 변경된 비밀번호 정보를 새로운 ChangePasswordDTO 객체에 담아 반환합니다.
@@ -163,6 +148,12 @@ public class UserController {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
     }
+
+////////////////////////////////////////////////////////////////////////////////////
+
+
+
+
 
 
 
