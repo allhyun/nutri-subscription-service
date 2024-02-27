@@ -10,8 +10,8 @@ import lombok.Getter;
 @Getter
 @Builder
 public class FormDTO {
-    private Long result_id;
-    private Long id;
+    private long resultId;
+    private long userId;
     private int height;
     private int weight;
     private String gender;

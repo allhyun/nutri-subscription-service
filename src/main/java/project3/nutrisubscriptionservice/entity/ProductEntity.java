@@ -16,10 +16,10 @@ public class ProductEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "product_id", nullable = false)
-    private int productId;
+    private long productId;
 
     @ManyToOne
-    @JoinColumn(name="category_id", referencedColumnName="category_id")
+    @JoinColumn(name="category_id")
     private CategoryEntity category;
 
     @Column(name="p_name", length = 50, nullable = false)
