@@ -4,6 +4,8 @@ package project3.nutrisubscriptionservice.entity;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.util.List;
+
 @Entity
 @Builder
 @NoArgsConstructor
@@ -34,5 +36,8 @@ public class UserEntity {
 
     @Column(name = "address",nullable = true,  length = 255)
     private String address;
+
+    @OneToMany(mappedBy = "user") // UserEntity를 참조하는 필드명
+    private List<ChatRoomEntity> chatRooms;
 
 }
