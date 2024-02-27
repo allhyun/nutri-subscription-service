@@ -17,7 +17,7 @@ public class FormEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "result_id", nullable = false)
-    private int resultId;
+    private long resultId;
 
     @ManyToOne
     @JoinColumn(name="id")
@@ -55,4 +55,5 @@ public class FormEntity {
 
     @Column(name="answer8", nullable = false)
     private int answer8;
+
 }

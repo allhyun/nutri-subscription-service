@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.Customizer;
+import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.CsrfConfigurer;
@@ -19,6 +20,7 @@ import java.util.Arrays;
 
 @Configuration
 @EnableWebSecurity
+@EnableMethodSecurity(prePostEnabled = true)
 public class NutriWebSecurityConfig{
     @Autowired
     CustomAuthFilter customAuthFilter;
@@ -43,8 +45,8 @@ public class NutriWebSecurityConfig{
                             response.setStatus(200);
                         }))))
                 .authorizeHttpRequests(authorize -> authorize
-                        .requestMatchers("/user/**","/profile/**").permitAll()
-
+                        .requestMatchers("/user/signup","/user/signin", "/chats", "product/**").permitAll()
+//                        .requestMatchers("/form/**").permitAll()
                         .anyRequest().authenticated()//위에 나온 주소 말고 , 나머지 주소는 로그인이 필요하다.
 
                 );

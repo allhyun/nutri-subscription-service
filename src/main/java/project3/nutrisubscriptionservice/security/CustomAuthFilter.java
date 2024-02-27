@@ -25,7 +25,7 @@ public class CustomAuthFilter extends OncePerRequestFilter {
         try{
             HttpSession session = request.getSession();
             log.warn("session id {}", session.getId());
-            Object userId = session.getAttribute("UserId");
+            Object userId = session.getAttribute("userId");
             if(userId != null) {
 
                 Authentication authentication = new UsernamePasswordAuthenticationToken(String.valueOf(userId),null, AuthorityUtils.NO_AUTHORITIES);
