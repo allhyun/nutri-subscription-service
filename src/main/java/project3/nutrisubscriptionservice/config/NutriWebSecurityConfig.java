@@ -7,6 +7,7 @@ import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.annotation.web.configuration.WebSecurityCustomizer;
 import org.springframework.security.config.annotation.web.configurers.CsrfConfigurer;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
@@ -45,14 +46,19 @@ public class NutriWebSecurityConfig{
                             response.setStatus(200);
                         }))))
                 .authorizeHttpRequests(authorize -> authorize
+                                .requestMatchers("/swagger", "/swagger-ui.html", "/swagger-ui/**", "/api-docs", "/api-docs/**", "/v3/api-docs/**").permitAll()
                         .requestMatchers("/user/signup","/user/signin", "/chats", "product/**").permitAll()
-//                        .requestMatchers("/form/**").permitAll()
-                        .anyRequest().authenticated()//위에 나온 주소 말고 , 나머지 주소는 로그인이 필요하다.
+//                       .requestMatchers("/form/**").permitAll()
+                                //.requestMatchers("/v3/api-docs/**").permitAll() // '/api/user/'로 시작하는 요청 모두 접근 허가
+                                //.requestMatchers("/swagger-ui/**").permitAll()
+                                .anyRequest().authenticated()//위에 나온 주소 말고 , 나머지 주소는 로그인이 필요하다.
 
                 );
         http.addFilterAfter(customAuthFilter, UsernamePasswordAuthenticationFilter.class);
         return http.build();
     }
+
+
 
 
     @Bean
