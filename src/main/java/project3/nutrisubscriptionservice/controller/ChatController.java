@@ -3,14 +3,8 @@ package project3.nutrisubscriptionservice.controller;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
-import org.springframework.messaging.handler.annotation.MessageMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
-import project3.nutrisubscriptionservice.dto.ChatMessageDTO;
-import project3.nutrisubscriptionservice.entity.ChatRoomEntity;
+import org.springframework.web.bind.annotation.*;
+import project3.nutrisubscriptionservice.dto.ChatRoomDTO;
 import project3.nutrisubscriptionservice.service.ChatService;
 
 @RestController
@@ -23,11 +17,21 @@ public class ChatController {
 
 
 
-    @PostMapping("/message")
-    public ResponseEntity<?> sendMessage(@RequestBody ChatMessageDTO chatMessageDTO){
-        ChatRoomEntity savedRoom = chatService.createRoom(chatMessageDTO.getRoomId());
-        return ResponseEntity.ok(savedRoom);
+//    @PostMapping("/message")
+//    public ResponseEntity<?> sendMessage(@RequestBody ChatMessageDTO chatMessageDTO){
+//        ChatRoomEntity savedRoom = chatService.createRoom(chatMessageDTO.getRoomId());
+//        return ResponseEntity.ok(savedRoom);
+//    }
+
+    @PostMapping
+    public ChatRoomDTO createRoom(@RequestBody ChatRoomDTO chatRoomDTO){
+        return chatService.createRoom(chatRoomDTO);
     }
+
+//    @GetMapping
+//    public List<ChatRoomDTO> findAllRoom(){
+//        return chatService.findAll();
+//    }
 
 
 }

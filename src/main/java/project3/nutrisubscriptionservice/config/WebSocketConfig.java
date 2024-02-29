@@ -2,7 +2,9 @@ package project3.nutrisubscriptionservice.config;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.web.socket.config.annotation.*;
 import project3.nutrisubscriptionservice.handler.WebSocketChatHandler;
 
@@ -18,6 +20,8 @@ public class WebSocketConfig implements WebSocketConfigurer {
      */
     @Autowired
     WebSocketChatHandler webSocketChatHandler;
+//    @Autowired
+//    SimpMessagingTemplate messagingTemplate;
 
     @Override
     public void registerWebSocketHandlers(WebSocketHandlerRegistry registry) {
@@ -30,7 +34,7 @@ public class WebSocketConfig implements WebSocketConfigurer {
     }
 
 //    @Override
-//    public void  configureMessageBroker(WebSocketMessageB registry){
+//    public void  configureMessageBroker(WebSocketMes registry){
 //        registry.enableSimpleBroker("/queue", "/topic");
 //        registry.setApplicationDestinationPrefixes("/api");
 //    }
