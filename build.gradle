@@ -39,6 +39,10 @@ dependencies {
 	implementation 'javax.xml.bind:jaxb-api:2.3.1' // XML 문서와 JAVA 객체간 매핑 자동화ㅍ
 	implementation 'org.springframework.boot:spring-boot-starter-websocket'
 
+	//swagger
+	//implementation 'org.springdoc:springdoc-openapi-ui:1.6.9'
+	implementation group: 'org.springdoc', name: 'springdoc-openapi-starter-webmvc-ui', version: '2.1.0'
+
 }
 
 tasks.named('test') {
