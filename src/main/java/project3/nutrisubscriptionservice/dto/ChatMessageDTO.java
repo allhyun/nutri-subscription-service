@@ -27,15 +27,15 @@ public class ChatMessageDTO{
     private String chatContents;
     private LocalDateTime createdAt;
 
-    public static ChatMessageDTO fromEntity(ChatMessageEntity chatMessage) {
-        ChatMessageDTO chatMessageDTO = new ChatMessageDTO();
-        return ChatMessageDTO.builder()
-                .chatId(chatMessage.getChat_id())
-                .roomId(chatMessage.getRoomid().getRoomid())
-                .chatContents(chatMessage.getChatContents())
-                .createdAt(chatMessage.getCreatedAt())
-                .build();
-
-    }
+//    public static ChatMessageDTO fromEntity(ChatMessageEntity chatMessage) {
+//        ChatMessageDTO chatMessageDTO = new ChatMessageDTO();
+//        return ChatMessageDTO.builder()
+//                .chatId(chatMessage.getChat_id())
+//                .roomId(chatMessage.getRoomid().getRoomid())
+//                .chatContents(chatMessage.getChatContents())
+//                .createdAt(chatMessage.getCreatedAt())
+//                .build();
+//
+//    }
 
 }

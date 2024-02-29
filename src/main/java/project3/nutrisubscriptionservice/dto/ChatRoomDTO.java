@@ -1,13 +1,11 @@
 package project3.nutrisubscriptionservice.dto;
 
-import jakarta.persistence.Entity;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import org.springframework.web.socket.TextMessage;
 import org.springframework.web.socket.WebSocketSession;
+import project3.nutrisubscriptionservice.entity.ChatMessageEntity;
 import project3.nutrisubscriptionservice.entity.ChatRoomEntity;
+import project3.nutrisubscriptionservice.service.ChatService;
 
 import java.io.IOException;
 import java.util.HashSet;
@@ -16,6 +14,7 @@ import java.util.Set;
 
 @Builder
 @Getter
+@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 public class ChatRoomDTO {
@@ -23,32 +22,17 @@ public class ChatRoomDTO {
     private Long userId;
     private Set<WebSocketSession> sessions = new HashSet<>();
 
-
-
-    public void sendMessage(TextMessage message) {
-        this.getSessions()
-                .parallelStream()
-                .forEach(session -> sendMessageToSession(session, message));
-    }
-
-    private void sendMessageToSession(WebSocketSession session, TextMessage message) {
-        try {
-            session.sendMessage(message);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
+    public void handlerActions(WebSocketSession session, ChatMessageDTO chatMessage, ChatService chatService) {
+        if (chatMessage.getType().equals(ChatMessageDTO.MessageType.ENTER)) {
+            sessions.add(session);
+            chatMessage.setChatContents(chatMessage.getChatId() + "님이 입장했습니다.");
         }
+        sendMessage(chatMessage, chatService);
+
     }
 
-    public void join(WebSocketSession session) {
-        sessions.add(session);
-    }
-
-    public static ChatRoomDTO fromEntity(ChatRoomEntity chatRoom) {
-        ChatRoomDTO chatRoomDTO = new ChatRoomDTO();
-        return ChatRoomDTO.builder()
-                .roomId(chatRoom.getRoomid())
-                .userId(chatRoom.getUser().getId())
-                .build();
-
+    private <T> void sendMessage(T message, ChatService chatService) {
+        sessions.parallelStream()
+                .forEach(session -> chatService.sendMessage(session, message));
     }
 }
