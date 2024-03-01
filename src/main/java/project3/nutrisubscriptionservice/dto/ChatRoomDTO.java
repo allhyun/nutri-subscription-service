@@ -20,7 +20,7 @@ import java.util.Set;
 public class ChatRoomDTO {
     private Long roomId;
     private Long userId;
-    private Set<WebSocketSession> sessions = new HashSet<>();
+    private final Set<WebSocketSession> sessions = new HashSet<>();
 
     public void handlerActions(WebSocketSession session, ChatMessageDTO chatMessage, ChatService chatService) {
         if (chatMessage.getType().equals(ChatMessageDTO.MessageType.ENTER)) {
