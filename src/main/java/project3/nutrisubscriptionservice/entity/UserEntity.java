@@ -40,4 +40,5 @@ public class UserEntity {
     @OneToMany(mappedBy = "user") // UserEntity를 참조하는 필드명
     private List<ChatRoomEntity> chatRooms;
 
+
 }

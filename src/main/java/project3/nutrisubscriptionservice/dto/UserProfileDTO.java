@@ -17,7 +17,10 @@ public class UserProfileDTO {
     private String phone;
     private String zipcode;
     private String address;
-    public UserProfileDTO(){} //기본 생성자
+    public UserProfileDTO(){} //기본 생성자?
+
+    public UserProfileDTO(UserEntity userEntity) {
+    }
 
     public static UserProfileDTO fromUser(UserEntity user) {
         UserProfileDTO userProfileDTO = new UserProfileDTO();
