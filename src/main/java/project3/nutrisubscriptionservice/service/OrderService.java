@@ -17,6 +17,7 @@ import project3.nutrisubscriptionservice.entity.UserEntity;
 import project3.nutrisubscriptionservice.repository.OrderRepository;
 import project3.nutrisubscriptionservice.repository.UserRepository;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -63,7 +64,8 @@ public class OrderService {
     //유저의 id로 주문목록 조회
     @Transactional(readOnly = true)
     public List<OrderDTO> findByUserId(long id){
-        List<OrderDTO> orderDTOList = orderRepository.findByUserId(id).stream()
+        List<OrderDTO> orderDTOList = orderRepository.findByUserId(id)
+                .stream()
                 .map(order -> {return new OrderDTO(order);}).collect(Collectors.toList());
         for(OrderDTO orderDTO : orderDTOList){
             settingProductDTO(orderDTO);
@@ -114,7 +116,25 @@ public class OrderService {
 
 
     @Transactional(readOnly = true)
+//    public void  settingProductDTO(OrderDTO orderDTO){
+//        orderDTO.setProducts(productService.getAllProducts());
+//    }
+
     public void  settingProductDTO(OrderDTO orderDTO){
-        orderDTO.setProducts(productService.getAllProducts());
+        log.info("product id {}", orderDTO.getProduct_id());
+        orderDTO.setProducts(productService.getProductById(orderDTO.getProduct_id()));
     }
+
+
+//    public void settingProductDTO(OrderDTO orderDTO) {
+//        List<Long> productIds = orderDTO.getProduct_id(); // 주문에 속한 모든 제품 ID를 가져온다고 가정
+//        List<ProductDTO> productDTOs = new ArrayList<>();
+//
+//        for (Long productId : productIds) {
+//            ProductDTO productDTO = productService.getProductById(productId); // 각 제품 ID에 해당하는 ProductDTO를 가져옴
+//            productDTOs.add(productDTO); // 리스트에 추가
+//        }
+//
+//        orderDTO.setProducts(productDTOs); // OrderDTO에 제품 리스트 설정
+//    }
 }
