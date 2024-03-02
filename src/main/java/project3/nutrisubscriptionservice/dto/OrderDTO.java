@@ -2,10 +2,9 @@ package project3.nutrisubscriptionservice.dto;
 
 import lombok.*;
 import project3.nutrisubscriptionservice.entity.OrderEntity;
-import project3.nutrisubscriptionservice.entity.ProductEntity;
+import project3.nutrisubscriptionservice.entity.UserEntity;
 
 import java.time.LocalDateTime;
-import java.util.List;
 
 @Getter
 //@Builder
@@ -29,6 +28,7 @@ public class OrderDTO {
 //    public OrderDTO(){}
 
     public  OrderDTO(OrderEntity orderEntity) {
+        this.id=orderEntity.getUser().getId();
         this.product_id= orderEntity.getProduct().getProductId();
         this.order_id = orderEntity.getOrderId();
         this.total_price = orderEntity.getTotalPrice();
@@ -38,6 +38,7 @@ public class OrderDTO {
         this.addressee = orderEntity.getAddressee();
         this.paydate = orderEntity.getPayDate();
     }
+
 
 
 }
