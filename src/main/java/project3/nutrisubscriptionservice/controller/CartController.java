@@ -54,8 +54,8 @@ public class CartController {
 
     @PreAuthorize("isAuthenticated()")
     @PostMapping("/{userId}/add")
-    public ResponseEntity<Void> addProductToCart(@PathVariable Long userId, @RequestParam Long productId, @RequestParam int quantity) {
-        cartService.addProductToCart(userId, productId, quantity);
+    public ResponseEntity<Void> addProductToCart(@PathVariable Long userId, @RequestBody CartProductDTO cartProductDTO) {
+        cartService.addProductToCart(userId, cartProductDTO.getProductId(), cartProductDTO.getQuantity());
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
