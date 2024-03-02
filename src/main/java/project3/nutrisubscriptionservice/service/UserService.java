@@ -60,11 +60,41 @@ public class UserService {
     }
 
 
-    public Optional<UserEntity> getMyUserWithAuthorities(){
-        log.info(getCurrentUsername().toString());
-        return getCurrentUsername()
-                .map(email -> userRepository.findByEmail(email)); // 사용자 이름을 이메일로 가정
-                //.orElse(Optional.empty());
+
+
+
+//    public Optional<String> getCurrentUsername() {
+//        Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+//        if (principal instanceof UserDetails) {
+//            return Optional.of(((UserDetails) principal).getUsername());
+//        } else if (principal instanceof String) {
+//            String username = principal.toString();
+//            if (!"anonymousUser".equals(username)) {
+//                return Optional.of(username);
+//            }
+//        }
+//        return Optional.empty();
+//    }
+
+
+//    public Optional<UserEntity> getMyUserWithAuthorities(){
+//        log.info(getCurrentUsername().toString());
+//        return getCurrentUsername()
+//                .map(email -> userRepository.findByEmail(email)); // 사용자 이름을 이메일로 가정
+//                //.orElse(Optional.empty());
+//    }
+
+    public Optional<UserEntity> getMyUserWithAuthorities() {
+        return getCurrentUsername().flatMap(id -> {
+            try {
+                Long userId = Long.parseLong(id); // id를 Long으로 변환
+                log.info("Current User ID: {}", userId);
+                return userRepository.findById(userId); // 변환된 userId로 사용자 조회
+            } catch (NumberFormatException e) {
+                log.error("ID 형식 변환 오류: {}", e.getMessage());
+                return Optional.empty(); // 형식 변환 오류 발생 시 빈 Optional 반환
+            }
+        });
     }
 
 }

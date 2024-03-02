@@ -34,7 +34,8 @@ public class OrderListController {
 
     //주문하기
     @PostMapping("/save")
-    public OrderDTO save(@Validated @RequestBody OrderDTO orderDTO){
+    public OrderDTO save( @RequestBody OrderDTO orderDTO){
+
         return orderService.save(orderDTO);
     }
 

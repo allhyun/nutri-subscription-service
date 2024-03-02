@@ -1,6 +1,8 @@
 package project3.nutrisubscriptionservice.service;
 
 
+import io.micrometer.core.instrument.Meter;
+import jakarta.persistence.Id;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.catalina.User;
@@ -13,8 +15,10 @@ import project3.nutrisubscriptionservice.dto.ProductDTO;
 import project3.nutrisubscriptionservice.dto.UserDTO;
 import project3.nutrisubscriptionservice.dto.UserProfileDTO;
 import project3.nutrisubscriptionservice.entity.OrderEntity;
+import project3.nutrisubscriptionservice.entity.ProductEntity;
 import project3.nutrisubscriptionservice.entity.UserEntity;
 import project3.nutrisubscriptionservice.repository.OrderRepository;
+import project3.nutrisubscriptionservice.repository.ProductRepository;
 import project3.nutrisubscriptionservice.repository.UserRepository;
 
 import java.util.ArrayList;
@@ -22,12 +26,18 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import static org.springframework.data.jpa.domain.AbstractPersistable_.id;
+
 @Slf4j
 @RequiredArgsConstructor
 @Service
 public class OrderService {
     @Autowired
     OrderRepository orderRepository;
+    @Autowired
+    UserRepository userRepository;
+    @Autowired
+    ProductRepository productRepository;
     @Autowired
     UserProfileService userProfileService;
 
@@ -66,7 +76,8 @@ public class OrderService {
     public List<OrderDTO> findByUserId(long id){
         List<OrderDTO> orderDTOList = orderRepository.findByUserId(id)
                 .stream()
-                .map(order -> {return new OrderDTO(order);}).collect(Collectors.toList());
+                .map(order -> {return new OrderDTO(order);})
+                .collect(Collectors.toList());
         for(OrderDTO orderDTO : orderDTOList){
             settingProductDTO(orderDTO);
         }
@@ -74,14 +85,26 @@ public class OrderService {
     }
 
     //주문하기
-    public OrderDTO save(OrderDTO orderDTO){
+    public OrderDTO save( OrderDTO orderDTO){
         //주문 상품 검증i
         productService.getProductById(orderDTO.getProduct_id());
         //현재 인증된 userId조회
+         UserDTO userDTO = new UserDTO(userService.getMyUserWithAuthorities().get());
+         Long userId = userDTO.getId();
+         UserEntity user = userRepository.findById(userId)
+                 .orElseThrow(() -> new IllegalArgumentException("user doesn't exist"));
 
-        UserDTO userDTO = new UserDTO(userService.getMyUserWithAuthorities().get());
-        Long userId = userDTO.getId();
-        log.info("유저 저장"+userId);
+         Long productId = orderDTO.getProduct_id();
+        ProductEntity product = productRepository.findByProductId(productId)
+                .orElseThrow(()->new IllegalArgumentException("user doesn't exist"));
+        // 현재 인증된 사용자 정보 조회
+//        UserEntity userEntity =  userService.getMyUserWithAuthorities()
+//                .orElseThrow(() -> new RuntimeException("사용자를 찾을 수 없습니다."));
+//         Long userId = userEntity.getId();
+//        log.info("사용자{}",userId);
+
+        //Long userId = userDTO.getId();
+        log.info("유저 저장 {}",userId);
         //현재 인증된 사용자 정보 조회
 //        Optional<UserEntity> myUserOpt = userService.getMyUserWithAuthorities();
        // if (myUserOpt.isEmpty()) {
@@ -90,19 +113,19 @@ public class OrderService {
 //        }
 //        UserDTO userDTO = new UserDTO(myUserOpt.get());
 //        Long userId = userDTO.getId();
-        log.info("User saved: " + userId);
-
 
 
         OrderEntity orderEntity = OrderEntity.builder()
-                .totalPrice(orderDTO.getTotal_price())
+                //.user(user)
+               .totalPrice(orderDTO.getTotal_price())
                 .address(orderDTO.getAddress())
                 .zipCode(orderDTO.getZipcode())
                 .phone(orderDTO.getPhone())
                 .addressee(orderDTO.getAddressee())
                 .payDate(orderDTO.getPaydate())
                 // 인증된 사용자를 주문에 연결
-                //.user(userDTO.toEntity()) // toEntity 메서드는 UserDTO를 User 엔티티로 변환해주는 메서드
+                .user(user) // toEntity 메서드는 UserDTO를 User 엔티티로 변환해주는 메서드
+                .product(product)
                 .build();
 
         orderEntity = orderRepository.save(orderEntity);
@@ -115,10 +138,7 @@ public class OrderService {
 
 
 
-    @Transactional(readOnly = true)
-//    public void  settingProductDTO(OrderDTO orderDTO){
-//        orderDTO.setProducts(productService.getAllProducts());
-//    }
+   // @Transactional(readOnly = true)
 
     public void  settingProductDTO(OrderDTO orderDTO){
         log.info("product id {}", orderDTO.getProduct_id());
@@ -126,15 +146,4 @@ public class OrderService {
     }
 
 
-//    public void settingProductDTO(OrderDTO orderDTO) {
-//        List<Long> productIds = orderDTO.getProduct_id(); // 주문에 속한 모든 제품 ID를 가져온다고 가정
-//        List<ProductDTO> productDTOs = new ArrayList<>();
-//
-//        for (Long productId : productIds) {
-//            ProductDTO productDTO = productService.getProductById(productId); // 각 제품 ID에 해당하는 ProductDTO를 가져옴
-//            productDTOs.add(productDTO); // 리스트에 추가
-//        }
-//
-//        orderDTO.setProducts(productDTOs); // OrderDTO에 제품 리스트 설정
-//    }
 }
