@@ -30,4 +30,5 @@ public class ProductEntity {
 
     @Column(name="p_info", length = 100, nullable = false)
     private String pInfo;
+
 }

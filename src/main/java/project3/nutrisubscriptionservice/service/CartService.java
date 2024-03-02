@@ -68,7 +68,13 @@ public class CartService {
                     return newCart;
                 });
 
+        CartProductKey cartProductKey = CartProductKey.builder()
+                .cartId(cart.getCartId())
+                .productId(product.getProductId())
+                .build();
+
         CartProductEntity cartProduct = CartProductEntity.builder()
+                .cartProductId(cartProductKey)
                 .cart(cart)
                 .product(product)
                 .quantity(quantity)
