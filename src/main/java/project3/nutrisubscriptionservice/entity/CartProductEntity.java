@@ -1,5 +1,6 @@
 package project3.nutrisubscriptionservice.entity;
 
+import com.fasterxml.jackson.annotation.JsonUnwrapped;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -14,6 +15,7 @@ import lombok.NoArgsConstructor;
 @Table(name="cart_product")
 public class CartProductEntity {
     @EmbeddedId
+    @JsonUnwrapped
     private CartProductKey cartProductId;
 
     @ManyToOne
