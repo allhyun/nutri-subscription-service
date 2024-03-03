@@ -1,6 +1,5 @@
 package project3.nutrisubscriptionservice.controller;
 
-
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -11,15 +10,20 @@ import project3.nutrisubscriptionservice.service.OrderService;
 
 import java.util.List;
 
+
 @RestController
-@RequestMapping("/orderlist")
+@RequestMapping("/order")
 @Slf4j
-public class OrderListController {
+public class OrderController {
     @Autowired
     OrderService orderService;
+//    @Autowired
+//    UserProfileDTO userProfileDTO;
 
+    //현재 인증된 사용자의 주문 조회 (나의 주문조회)
     @GetMapping("/{userId}")
-    public ResponseEntity<List<OrderDTO>> findByMyUserId(@PathVariable Long userId, Model model){
+    //@PreAuthorize("hasAnyRole('ADMIN')")
+    public ResponseEntity <List<OrderDTO>> findByMyUserId(@PathVariable Long userId, Model model){
         List<OrderDTO> orderDTO = orderService.findByUserId(userId);
         model.addAttribute("user",orderDTO);
         return ResponseEntity.ok(orderDTO);
