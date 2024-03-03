@@ -1,9 +1,6 @@
 package project3.nutrisubscriptionservice.entity;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.time.LocalDateTime;
 
@@ -12,6 +9,7 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @AllArgsConstructor
 @Getter
+@Setter
 @Table(name="orderitem")
 public class OrderItemEntity {
     @Id
@@ -32,4 +30,7 @@ public class OrderItemEntity {
 
     @Column(name="count",nullable = false)
     private int count;
+
+    public OrderItemEntity(OrderItemEntity order) {
+    }
 }
