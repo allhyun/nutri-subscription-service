@@ -13,6 +13,7 @@ import project3.nutrisubscriptionservice.repository.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 @Setter
@@ -34,16 +35,24 @@ public class OrderItemService {
 //    @Autowired
 //    OrderItemEntity orderItemEntity;
 //    @Autowired
-//    OrderListEntity orderListEntity;
+//    OrderListEntity orderListEntity1;
 //    @Autowired
 //    CartProductDTO cartProductDTO;
 
 
 
-    public OrderListDTO getOrderByUser(Long userId) {
-        UserEntity userEntity = userRepository.findById(userId)
-                .orElseThrow(() -> new RuntimeException("유저정보를 찾을 수 없습니다.: " + userId));
-        return OrderListDTO.builder().build();
+    public OrderListDTO getOrderByUser(Long userid) {
+        UserEntity userEntity = userRepository.findById(userid)
+                .orElseThrow(() -> new RuntimeException("유저정보를 찾을 수 없습니다.: " + userid));
+        OrderListEntity orderListEntity = orderListRepository.findByUserId(userid);
+
+        OrderListDTO orderListDTO = new OrderListDTO();
+        return OrderListDTO.builder()
+                .orderlistId(orderListEntity.getOrderlistId())
+                .id(userEntity.getId())
+
+                .orderdate(orderListEntity.getOrderdate())
+                .build();
 //                findById(userId);
     }
 

@@ -19,7 +19,7 @@ public class OrderListDTO {
     private long id;
     private LocalDateTime orderdate;
     private List<OrderItemDTO> orderItems;
-    private UserDTO user;
+    private List<UserDTO> user;
 //    public  OrderListDTO(OrderListEntity orderListEntity) {
 //        this.orderlistId=orderListEntity.getOrderlistId();
 //        this.id=orderListEntity.getUser().getId();
@@ -38,4 +38,7 @@ public class OrderListDTO {
                 .collect(Collectors.toList());
     }
 
+    public OrderListDTO() {
+
+    }
 }
