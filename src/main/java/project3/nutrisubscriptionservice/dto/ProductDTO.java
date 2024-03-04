@@ -1,9 +1,9 @@
 package project3.nutrisubscriptionservice.dto;
 
-import lombok.Builder;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 
+@AllArgsConstructor
+@NoArgsConstructor
 @Getter
 @Builder
 @Setter//다현

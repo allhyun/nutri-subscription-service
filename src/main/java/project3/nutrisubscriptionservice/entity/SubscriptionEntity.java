@@ -13,30 +13,25 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @AllArgsConstructor
 @Getter
-@Table(name="subscribelist")
-public class SubscribeList {
+@Table(name="subscription")
+public class SubscriptionEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name="sub_id",nullable = false)
     private long  subId;
 
-    @ManyToOne
+    @OneToOne
     @JoinColumn(name="id")
     private UserEntity user;
 
     @ManyToOne
-    @JoinColumn(name="order_id")
-    private OrderEntity order;
-
-    @Column(name="sub_Date",nullable = false)
-    private LocalDateTime subDate;
+    @JoinColumn(name="orderlist_id")
+    private OrderListEntity orderList;
 
     @Column(name="start_date",nullable = false)
     private LocalDateTime startDate;
 
     @Column(name="exp_date",nullable = false)
     private LocalDateTime expDate;
-
-
 
 }

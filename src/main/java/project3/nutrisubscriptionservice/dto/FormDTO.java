@@ -4,9 +4,13 @@ package project3.nutrisubscriptionservice.dto;
 // 클라이언트 측: DTO로 설문조사 결과를 서버에 전달,
 // 서버 측: DTO를 사용해 클라이언트로부터 전달된 설문조사 결과를 처리합니다.
 
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
+@AllArgsConstructor
+@NoArgsConstructor
 @Getter
 @Builder
 public class FormDTO {
