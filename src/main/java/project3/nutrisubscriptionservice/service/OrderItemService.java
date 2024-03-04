@@ -1,5 +1,6 @@
 package project3.nutrisubscriptionservice.service;
 
+import io.micrometer.core.instrument.Meter;
 import lombok.AllArgsConstructor;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
@@ -51,14 +52,13 @@ public class OrderItemService {
         List<OrderItemEntity> orderItemEntities = orderListEntity.getOrderItemEntitiy();
 
         // OrderItemEntity 목록을 OrderItemDTO 목록으로 변환
-        List<OrderItemDTO> orderItemDTOs = orderItemEntities.stream()
-                .map(orderItemEntity -> {
-                    // OrderItemDTO 변환 로직, 예시로 아래와 같이 적을 수 있음
-                    return new OrderItemDTO(orderItemEntity.getProduct(),
-                            orderItemEntity.getCount(),
-                            orderItemEntity.getOrderPrice());
-                })
+        List<OrderItemDTO> orderItemDTOList = orderItemRepository.findByOrderList(orderListEntity)
+                .stream()
+                .map(order -> {return new OrderItemDTO(order);})
                 .collect(Collectors.toList());
+        for(OrderItemDTO orderItemDTO : orderItemDTOList){
+            settingProductDTO(orderItemDTO);
+        }
 
         OrderListDTO orderListDTO = new OrderListDTO();
         return OrderListDTO.builder()
@@ -66,7 +66,7 @@ public class OrderItemService {
                 .id(userEntity.getId())
 
                 .orderdate(orderListEntity.getOrderdate())
-                .orderItems(orderItemDTOs)
+                .orderItems(orderItemDTOList)
                 //.user(userEntity)
                 .build();
 //                findById(userId);
@@ -224,9 +224,9 @@ public class OrderItemService {
 //    }
 //
 //
-//    public void  settingProductDTO(OrderListEntity orderListEntity){
-//        log.info("product id {}", orderListEntity.getOrderItemEntitiy());
-//        orderListEntity.setOrderItemEntitiy(order);
-//    }
+    public void  settingProductDTO(OrderItemDTO orderItemDTO){
+       log.info("product id {}", orderItemDTO.getProducts());
+        orderItemDTO.setProducts(productService.getProductById(orderItemDTO.getProduct_id()));
+    }
 /////////////////////////////////////////////////////////////////////
 }
