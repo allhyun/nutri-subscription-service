@@ -1,9 +1,6 @@
 package project3.nutrisubscriptionservice.dto;
 import lombok.*;
-import project3.nutrisubscriptionservice.entity.OrderEntity;
-import project3.nutrisubscriptionservice.entity.OrderItemEntity;
 import project3.nutrisubscriptionservice.entity.OrderListEntity;
-import project3.nutrisubscriptionservice.entity.UserEntity;
 
 import java.time.LocalDateTime;
 import java.util.List;
