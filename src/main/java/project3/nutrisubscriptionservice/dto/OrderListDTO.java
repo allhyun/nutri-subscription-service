@@ -13,19 +13,29 @@ import java.util.stream.Collectors;
 @Setter
 @Builder
 @AllArgsConstructor
-@NoArgsConstructor
+//@NoArgsConstructor
 public class OrderListDTO {
     private long orderlistId;
     private long id;
     private LocalDateTime orderdate;
     private List<OrderItemDTO> orderItems;
     private UserDTO user;
-    public  OrderListDTO(OrderListEntity orderListEntity) {
-        this.orderlistId=orderListEntity.getOrderlistId();
-        this.id=orderListEntity.getUser().getId();
+//    public  OrderListDTO(OrderListEntity orderListEntity) {
+//        this.orderlistId=orderListEntity.getOrderlistId();
+//        this.id=orderListEntity.getUser().getId();
+//        this.orderdate = orderListEntity.getOrderdate();
+//        orderItems=orderListEntity.getOrderItemEntitiy().stream()
+//                .map(orderItemEntity -> new OrderItemDTO(orderItemEntity))
+//                .collect(Collectors.toList());
+//    }
+
+    public OrderListDTO (OrderListEntity orderListEntity) {
+        this.orderlistId = orderListEntity.getOrderlistId();
+        this.id = orderListEntity.getUser().getId();
         this.orderdate = orderListEntity.getOrderdate();
-        orderItems=orderListEntity.getOrderItemEntitiy().stream()
+        orderItems = orderListEntity.getOrderItemEntitiy().stream()
                 .map(orderItemEntity -> new OrderItemDTO(orderItemEntity))
                 .collect(Collectors.toList());
     }
+
 }

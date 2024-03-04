@@ -12,6 +12,7 @@ import project3.nutrisubscriptionservice.repository.*;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @Setter
@@ -39,7 +40,12 @@ public class OrderItemService {
 
 
 
-//    List<OrderItemDTO> orderItems = new ArrayList<>();
+    public OrderListDTO getOrderByUser(Long userId) {
+        UserEntity userEntity = userRepository.findById(userId)
+                .orElseThrow(() -> new RuntimeException("유저정보를 찾을 수 없습니다.: " + userId));
+        return OrderListDTO.builder().build();
+//                findById(userId);
+    }
 
 
     ////////////////OrderListDTO////////////??//////
@@ -54,9 +60,28 @@ public class OrderItemService {
         return orderItemEntity;
     }
 
+    //주문상품 추가
+//    public OrderItemDTO addOrderItem(Long userId,Long orderitemId,OrderItemDTO orderItemDTO) {
+//
+//        UserEntity userEntity = userRepository.findById(userId)
+//                .orElseThrow(() -> new RuntimeException("유저정보를 찾을 수 없습니다.: " + userId));
+//
+//        OrderItemEntity orderItemEntity = orderItemRepository.findById(orderitemId)
+//                .orElseThrow(() -> new RuntimeException("주문상품을 찾을 수 없습니다.: " + orderitemId));
+//        List<OrderItemEntity> orderItems = new ArrayList<>();
+//
+//        orderItems.add(orderItemEntity);
+//        orderItemEntity.setOrderList(orderItemEntity.getOrderList());
+//
+//        return ;
+//    }
+
+
 //주문상품들 리스트화
 
     public OrderListEntity createOrderList(UserEntity user, List<OrderItemEntity> orderItemList){
+
+
         OrderListEntity orderListEntity = new OrderListEntity( );
         orderListEntity.setUser(user);
         for(OrderItemEntity orderItemEntity : orderItemList){
