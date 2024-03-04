@@ -13,6 +13,7 @@ import project3.nutrisubscriptionservice.repository.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 @Setter
@@ -34,16 +35,40 @@ public class OrderItemService {
 //    @Autowired
 //    OrderItemEntity orderItemEntity;
 //    @Autowired
-//    OrderListEntity orderListEntity;
+//    OrderListEntity orderListEntity1;
 //    @Autowired
 //    CartProductDTO cartProductDTO;
 
 
 
-    public OrderListDTO getOrderByUser(Long userId) {
-        UserEntity userEntity = userRepository.findById(userId)
-                .orElseThrow(() -> new RuntimeException("유저정보를 찾을 수 없습니다.: " + userId));
-        return OrderListDTO.builder().build();
+    public OrderListDTO getOrderByUser(Long userid) {
+        UserEntity userEntity = userRepository.findById(userid)
+                .orElseThrow(() -> new RuntimeException("유저정보를 찾을 수 없습니다.: " + userid));
+        OrderListEntity orderListEntity = orderListRepository.findByUserId(userid);
+
+
+        // OrderListEntity에서 주문 항목 목록을 가져옴
+        List<OrderItemEntity> orderItemEntities = orderListEntity.getOrderItemEntitiy();
+
+        // OrderItemEntity 목록을 OrderItemDTO 목록으로 변환
+        List<OrderItemDTO> orderItemDTOs = orderItemEntities.stream()
+                .map(orderItemEntity -> {
+                    // OrderItemDTO 변환 로직, 예시로 아래와 같이 적을 수 있음
+                    return new OrderItemDTO(orderItemEntity.getProduct(),
+                            orderItemEntity.getCount(),
+                            orderItemEntity.getOrderPrice());
+                })
+                .collect(Collectors.toList());
+
+        OrderListDTO orderListDTO = new OrderListDTO();
+        return OrderListDTO.builder()
+                .orderlistId(orderListEntity.getOrderlistId())
+                .id(userEntity.getId())
+
+                .orderdate(orderListEntity.getOrderdate())
+                .orderItems(orderItemDTOs)
+                //.user(userEntity)
+                .build();
 //                findById(userId);
     }
 

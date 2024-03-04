@@ -2,6 +2,8 @@ package project3.nutrisubscriptionservice.dto;
 
 import lombok.*;
 import project3.nutrisubscriptionservice.entity.OrderItemEntity;
+import project3.nutrisubscriptionservice.entity.ProductEntity;
+
 @Getter
 @Setter
 @Builder
@@ -26,7 +28,6 @@ public class OrderItemDTO {
     }
 
 
-
-
-
+    public OrderItemDTO(ProductEntity product, int count, long orderitemId) {
+    }
 }
