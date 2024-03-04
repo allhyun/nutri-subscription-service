@@ -5,6 +5,9 @@ import lombok.AllArgsConstructor;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 import project3.nutrisubscriptionservice.dto.*;
@@ -42,34 +45,88 @@ public class OrderItemService {
 
 
 
-    public OrderListDTO getOrderByUser(Long userid) {
-        UserEntity userEntity = userRepository.findById(userid)
-                .orElseThrow(() -> new RuntimeException("유저정보를 찾을 수 없습니다.: " + userid));
-        OrderListEntity orderListEntity = orderListRepository.findByUserId(userid);
+//    public OrderListDTO getOrderByUser(Long userid) {
+//        UserEntity userEntity = userRepository.findById(userid)
+//                .orElseThrow(() -> new RuntimeException("유저정보를 찾을 수 없습니다.: " + userid));
+//        //OrderListEntity orderListEntity = orderListRepository.findByUserId(userid);
+//        List<OrderListEntity> orderList = orderListRepository.findAllByUserId(userid);
+//
+//        // OrderListEntity에서 주문 항목 목록을 가져옴
+//        List<OrderItemEntity> orderItemEntities = orderListEntity.getOrderItemEntitiy();
+//
+//        // OrderItemEntity 목록을 OrderItemDTO 목록으로 변환
+//        List<OrderItemDTO> orderItemDTOList = orderItemRepository.findByOrderList(orderListEntity)
+//                .stream()
+//                .map(order -> {return new OrderItemDTO(order);})
+//                .collect(Collectors.toList());
+//        for(OrderItemDTO orderItemDTO : orderItemDTOList){
+//            settingProductDTO(orderItemDTO);
+//        }
+//
+//        OrderListDTO orderListDTO = new OrderListDTO();
+//        return OrderListDTO.builder()
+//                .orderlistId(orderListEntity.getOrderlistId())
+//                .id(userEntity.getId())
+//
+//                .orderdate(orderListEntity.getOrderdate())
+//                .orderItems(orderItemDTOList)
+//                //.user(userEntity)
+//                .build();
+////                findById(userId);
+//    }
 
 
-        // OrderListEntity에서 주문 항목 목록을 가져옴
+
+    public OrderListDTO getOrderByUser(Long userId, int page, int size) {
+        // UserEntity를 찾고, 예외 처리
+        UserEntity userEntity = userRepository.findById(userId)
+                .orElseThrow(() -> new RuntimeException("유저정보를 찾을 수 없습니다.: " + userId));
+
+        // 페이지네이션 파라미터를 사용하여 PageRequest 생성
+        Pageable pageable = PageRequest.of(page, size);
+        // 유저 ID에 해당하는 모든 OrderListEntity를 찾기
+        Page<OrderListEntity> orderListEntityPage = orderListRepository.findAllByUserId(userId, pageable);
+
+        // OrderListEntity가 없거나 여러 개 있는지 확인
+        if (orderListEntityPage.isEmpty()) {
+            throw new RuntimeException("주문 목록을 찾을 수 없습니다.");
+        }
+
+//        else if (orderListEntities.size() > 1) {
+//            // TODO: 다수의 결과가 반환될 경우 처리 로직. 필요한 대응 방법에 따라 코드를 수정하세요.
+//            throw new RuntimeException("여러 개의 주문 목록이 반환되었습니다.");
+//        }
+
+        // 첫 페이지의 첫 번째 주문 리스트만 가져옴 (이 부분은 비즈니스 요구사항에 따라 다르게 처리 가능)
+        OrderListEntity orderListEntity = orderListEntityPage.getContent().get(0); // 단일 결과로 가정
+
+
+
+
+        //OrderListEntity orderListEntity = orderListEntities.get(0); // 단일 결과로 가정
+
+        // 주문 항목 목록 가져오기: 리팩토링하거나 'orderListEntity'를 사용하여 조회할 필요가 있는 경우, 이 부분을 수정
         List<OrderItemEntity> orderItemEntities = orderListEntity.getOrderItemEntitiy();
 
         // OrderItemEntity 목록을 OrderItemDTO 목록으로 변환
         List<OrderItemDTO> orderItemDTOList = orderItemRepository.findByOrderList(orderListEntity)
                 .stream()
-                .map(order -> {return new OrderItemDTO(order);})
+                .map(order -> new OrderItemDTO(order))
                 .collect(Collectors.toList());
-        for(OrderItemDTO orderItemDTO : orderItemDTOList){
+
+        for (OrderItemDTO orderItemDTO : orderItemDTOList) {
             settingProductDTO(orderItemDTO);
         }
 
-        OrderListDTO orderListDTO = new OrderListDTO();
+        // OrderListDTO 객체 생성 및 설정
+        // OrderListDTO 빌더 패턴 사용 (주의: 여기에 있는 `.id`는 UserEntity의 ID를 설정하는 것이 아닐 수 있음)
         return OrderListDTO.builder()
                 .orderlistId(orderListEntity.getOrderlistId())
                 .id(userEntity.getId())
-
                 .orderdate(orderListEntity.getOrderdate())
                 .orderItems(orderItemDTOList)
-                //.user(userEntity)
+                // .user(userEntity) // 필요한 경우 UserEntity를 DTO에 포함시켜야 할 수 있습니다.
                 .build();
-//                findById(userId);
     }
 
 

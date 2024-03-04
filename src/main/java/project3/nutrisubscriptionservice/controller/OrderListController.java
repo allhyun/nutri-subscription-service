@@ -68,9 +68,17 @@ public class OrderListController {
 //    }
 //    }
 
-    public ResponseEntity<OrderListDTO> getUserOrders(@PathVariable Long userId,Model model) {
-       // try {
-            OrderListDTO OrderList = orderItemService.getOrderByUser(userId);
+    public ResponseEntity<OrderListDTO> getUserOrders(@PathVariable Long userId,
+                                                      @RequestParam(value = "page", required = false) Integer page,
+                                                      @RequestParam(value = "size", required = false) Integer size,
+                                                      Model model) {
+
+        // 요청으로부터 받은 page와 size 파라미터 값이 없을 경우 기본값 설정
+        int currentPage = (page != null) ? page : 0; // 예로써 기본 페이지 값으로 '0' 사용
+        int pageSize = (size != null) ? size : 10;   // 예로써 기본 페이지 크기로 '10' 사용
+
+        // try {
+            OrderListDTO OrderList = orderItemService.getOrderByUser(userId,currentPage,pageSize);
             model.addAttribute("orderlist", OrderList);
             return ResponseEntity.ok(OrderList);
 
