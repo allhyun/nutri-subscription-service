@@ -1,6 +1,7 @@
 package project3.nutrisubscriptionservice.controller;
 
 
+import jakarta.persistence.EntityNotFoundException;
 import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -133,42 +134,56 @@ public class OrderListController {
     }
 
 
-//    @PostMapping(value = "/cart/orders")
-//    @ResponseBody
-//    public ResponseEntity orders(@RequestBody CartDTO cartDto, Principal principal) {
-//
-//        List<CartProductDTO> cartProductsDTO = cartDto.getCartProducts();
-//
-//        if (cartProductsDTO == null || cartProductsDTO.isEmpty()) {
-//            return new ResponseEntity<String>("주문할 상품을 선택해주세요.", HttpStatus.BAD_REQUEST);
-//        }
-//
-//        // 장바구니 주문 상품들을 각각 검증
-////        for (CartProductDTO cartOrderDto1 : cartProductsDTO) {
-////            if (!cartService.validateCartItem(cartOrderDto1.get(), principal.getName())) {
-////                return new ResponseEntity<String>("주문 권한이 없습니다.", HttpStatus.FORBIDDEN);
-////            }
-////        }
-//
-//        Long orderId = cartService.orderCartItem(cartOrderDtoList, principal.getName());
-//        return new ResponseEntity<Long>(orderId, HttpStatus.OK);
-//    }
-//
+   @PostMapping(value = "/cart/orders")
+   public ResponseEntity<Long> placeOrder(@RequestBody List<OrderListDTO> orderDtoList, Long userId, @AuthenticationPrincipal UserDetails userDetails) {
+       try {
+           // 현재 로그인한 사용자의 이메일 가져오기
+           String email = userDetails.getUsername();
 
+           // 주문을 생성하고 주문 ID를 가져옴
+           Long orderId = orderItemService.orders(orderDtoList, userId);
 
+//           // 주문 아이템 목록을 이용하여 주문 생성
+//           Long userId = orderItemService.orderFromCart(orderDtoList, userId);
 
-
-
-
-  @PostMapping("/{userId}/add")
-     public ResponseEntity<Void> addOrderitems(@PathVariable Long userId, @RequestBody OrderItemDTO orderItemDTO) {
-        try {
-           orderItemService.addOrderitems(userId,orderItemDTO.getProduct_id(), orderItemDTO.getCount());
-            return ResponseEntity.ok().build();
-         } catch (Exception e) {
-           return ResponseEntity.notFound().build();
-         }
+           return ResponseEntity.ok(orderId);
+       } catch (Exception e) {
+           return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
        }
+   }
+
+    @DeleteMapping("/{userId}/remove")
+    public ResponseEntity<Void> removeOrderItem(@PathVariable Long userId, @RequestParam Long productId,Long orderlistid) {
+        orderItemService.removeOrderItem(userId, productId,orderlistid);
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
+
+    @PostMapping("/cart/orderlist")
+    @ResponseBody
+    public ResponseEntity ordersFromCart(@RequestBody List<CartDTO> cartDTO, Principal principal) {
+        try {
+            // 현재 로그인한 사용자의 이메일 가져오기
+            String email = principal.getName();
+
+
+            // 장바구니 주문을 처리하고 주문 ID를 가져옴
+            Long orderId = orderItemService.orderCartItem(cartDTO, email);
+            log.info("email : {}" , orderItemService.orderCartItem(cartDTO, email));
+
+            return ResponseEntity.ok(orderId);
+        } catch (EntityNotFoundException e) {
+            // 장바구니나 사용자를 찾을 수 없는 경우
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("장바구니나 사용자를 찾을 수 없습니다.");
+        } catch (Exception e) {
+            // 예상치 못한 예외가 발생한 경우
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("주문 처리 중에 오류가 발생했습니다.");
+        }
+    }
+
+
+
+
+
 
 
 

@@ -45,6 +45,9 @@ public class OrderItemService {
     CartRepository cartRepository;
     @Autowired
     CartProductRepository cartProductRepository;
+    @Autowired
+    CartProductService cartProductService;
+
 
 
 
@@ -136,13 +139,6 @@ public class OrderItemService {
         }return totalPrice;
 
     }
-
-    //    public void orderCancle() {
-//        List<OrderItemEntity> orderItems = new ArrayList<>();
-//        for(OrderItemEntity orderItemEntity : orderItems){
-//            orderItemEntity.cancle();
-//        }
-//    }
     //orderItemDTO&Entity
     //Entity
     public static OrderItemEntity createOrderItem(ProductEntity product, int count) {
@@ -161,10 +157,7 @@ public class OrderItemService {
         return orderItem.getOrderPrice()*orderItem.getCount();
     }
 
-    //    public void cancel() {
-//        OrderItemEntity orderItem = new OrderItemEntity();
-//        orderItem.getProduct().addStock(count);
-//    }
+
     ////////////////////단일상품 주문
     public Long order(OrderListDTO orderList, String userId) {
 
@@ -211,10 +204,10 @@ public class OrderItemService {
 //    }
 
     //장바구니 상품주문
-    public Long orders(List<OrderListDTO> orderDtoList, String email) {
+    public Long orders(List<OrderListDTO> orderDtoList, Long userId ) {
 
         // 로그인한 유저 조회
-        UserEntity user = userRepository.findByEmail(email);
+        UserEntity user = userRepository.findById(Long.valueOf(userId)).orElseThrow();
 
         // orderDto 객체를 이용하여 item 객체와 count 값을 얻어낸 뒤, 이를 이용하여 OrderItem 객체(들) 생성
         List<OrderItemEntity> orderItem = new ArrayList<>();
@@ -230,177 +223,70 @@ public class OrderItemService {
         return order.getUser().getId();
     }
 
+    // 장바구니 상품(들) 주문
+    public Long orderCartItem(List<CartDTO> cartDTO, String userId) {
+
+        // 주문을 생성할 상품 목록을 담을 리스트
+        List<OrderItemEntity> orderItems = new ArrayList<>();
+
+        for (CartDTO cartDto : cartDTO) {
+            CartEntity cartEntity = cartRepository.findById(cartDto.getCartId())
+                    .orElseThrow(EntityNotFoundException::new);
+
+            // 각 장바구니에서 상품을 가져와서 주문 항목으로 변환하여 리스트에 추가
+            for (CartProductEntity cartProduct : cartEntity.getCartProducts()) {
+                OrderItemEntity orderItem = new OrderItemEntity();
+                // 필요한 정보를 설정 (예: 상품, 수량 등)
+                orderItem.setProduct(cartProduct.getProduct());
+                orderItem.setCount(cartProduct.getQuantity());
+                // 생성된 주문 항목을 리스트에 추가
+                orderItems.add(orderItem);
+            }
+
+            // 장바구니에서 상품을 주문한 후 장바구니 삭제
+            cartRepository.delete(cartEntity);
+        }
+
+        // 주문 생성 및 저장
+        UserEntity user = userRepository.findById(Long.valueOf(userId)).orElseThrow();
+        OrderListEntity order = createOrder(user, orderItems);
+        orderListRepository.save(order);
+
+        // 주문한 사용자의 ID 반환
+        return order.getUser().getId();
 
 
 
-    ////////////////OrderListDTO////////////??//////
 
-    //주문상품 추가
-//    public static OrderItemEntity addOrderItem(OrderItemEntity orderItemEntity) {
-//
-//        List<OrderItemEntity> orderItems = new ArrayList<>();
-//
-//        orderItems.add(orderItemEntity);
-//        orderItemEntity.setOrderList(orderItemEntity.getOrderList());
-//
-//        return orderItemEntity;
-//    }
 
-    //제품 주문하기
-//    public OrderListEntity createOrderList(UserEntity user, List<OrderItemEntity> orderItemList){
+
+
+
+//        List<OrderItemEntity> orderlistDto = new ArrayList<>();
 //
-//
-//        OrderListEntity orderListEntity = new OrderListEntity( );
-//        orderListEntity.setUser(user);
-//        for(OrderItemEntity orderItemEntity : orderItemList){
-//            addOrderItem(orderItemEntity);
+//        for (CartDTO cartDto : cartDTO) {
+//            CartEntity cartt = cartRepository.findById(cartDto.getCartId()).orElseThrow(EntityNotFoundException::new);
+//            OrderListDTO orderDto = new OrderListDTO();
+//            orderDto.setId(cartt.getUser().getId());
+//            orderlistDto.add(orderDto);
 //        }
-//        return orderListEntity;
-//    }
-
-
-    //장바구니
-//    public OrderItemEntity addCartOrder(Long itemId,long userId, Long productId,CartEntity cart,ProductEntity product, int price,int count){
-//        UserEntity user = userRepository.findById(userId).orElse(null);
-//        if (user == null) {
-//            throw new NoSuchElementException("해당 사용자를 찾을 수 없습니다.");
+//        log.info("eeeee : {}", orderlistDto);
+//        // OrderList 객체 생성
+//
+//        //UserEntity user = userRepository.findById(Long.valueOf(userId)).orElseThrow();
+//        //OrderListEntity orderListEntity =  createOrder(user, orderItemList);
+//
+//        Long orderId = orders(orderlistDto, Long.valueOf(userId));
+//        log.info("eeeee : {},{}", orderlistDto, Long.valueOf(userId));
+//        // 주문한 장바구니 상품을 제거
+//        for (CartDTO cartDto : cartDTO) {
+//            CartEntity cartt = cartRepository.findById(cartDto.getCartId()).orElseThrow(EntityNotFoundException::new);
+//            cartRepository.delete(cartt);
 //        }
-//
-//        ProductEntity products = productRepository.findById(productId).orElse(null);
-//        if (products == null) {
-//            throw new NoSuchElementException("해당 상품을 찾을 수 없습니다.");
-//        }
-//
-//        OrderItemEntity orderItem = OrderItemService.createOrderItem(itemId );
-//    }
+//        return orderId;
+    }
 
 
-//    public int getTotalPrice(){
-//        int totalPrice=0;
-//        List<OrderItemDTO> orderItems = new ArrayList<>();
-//        for(OrderItemDTO orderItemDTO :orderItems){
-//            totalPrice += (orderItemDTO.getOrderprice()*orderItemDTO.getCount());
-//        }
-//
-//
-//        return totalPrice;
-//    }
-
-    ////////////////////////////////////////////
-
-//    public static OrderItemEntity createOrderItem(ProductEntity product, int count){
-//
-//        OrderItemEntity orderItemEntity = new OrderItemEntity();
-//        orderItemEntity.setProduct(product);
-//        orderItemEntity.setCount(count);
-//        orderItemEntity.setOrderPrice(product.getPPrice());
-//
-//        return orderItemEntity;
-//    }
-/////////////////////////////////////////////////////////////////
-//////herehere............
-
-//    public OrderListEntity ItemCheckout(UserEntity user,Long userId ){
-//        Optional<UserEntity> userEntity = userRepository.findById(userId);
-//        // 로그인이 되어있는 유저의 id와 주문하는 id가 같아야 함
-//        // 사용자 ID로 장바구니 아이템을 조회합니다.
-//        //Optional<CartEntity> cartItems = cartRepository.findByUser(userId);
-//        List<CartProductEntity> cartItemss=cartProductRepository.findByUser(userId);
-//        OrderListEntity order = new OrderListEntity();
-//        order.setUser(user);
-//        for(CartProductEntity cartProduct : cartItemss){
-//            // 장바구니 항목을 주문 항목으로 변환합니다.
-//            OrderItemEntity orderItem = new OrderItemEntity();
-//            orderItem.setProduct(cartProduct.getProduct());
-//            orderItem.setCount(cartProduct.getQuantity());
-//            orderItem.setOrderList(order);
-//
-//            // 주문 항목을 추가합니다.
-//            OrderItemService.addOrderItem(orderItem);
-//        }
-//
-//        }
-//
-//    }
-//
-//
-//
-//
-//
-//    ///////////////////////////////OrderItemDTO  생성등 메서드들///////////////////////////
-//
-//    //개별 주문 상품
-//    public static OrderItemEntity createOrderItem(int oid,ProductEntity product,OrderListEntity orderListEntity, int count){
-//
-//        OrderItemEntity orderItemEntity = new OrderItemEntity();
-//        orderItemEntity.setOrderitemId(oid);
-//        orderItemEntity.setProduct(product);
-//        orderItemEntity.setOrderList(orderListEntity);
-//        orderItemEntity.setCount(count);
-//        orderItemEntity.setOrderPrice(product.getPPrice());
-//
-//        return orderItemEntity;
-//    }
-//
-//    //장바구니 전체 주문
-//    public static OrderItemEntity createcartOrderItem(int oid,ProductEntity product,CartProductEntity cartProduct){
-//        OrderItemEntity orderItem = new OrderItemEntity();
-//        orderItem.setOrderitemId(oid);
-//        orderItem.setProduct(cartProduct.getProduct());
-//        orderItem.setOrderPrice(cartProduct.getProduct().getPPrice());
-//        orderItem.setCount(cartProduct.getQuantity());
-//
-//        return orderItem;
-//
-//    }
-//
-//
-///////////////////////////////////service////////////////////////////////////
-//
-//    //주문 생성
-//    public void createOrder(UserEntity userEntity){
-//
-//
-//        OrderListEntity orderListEntity = new OrderListEntity();
-//        orderListEntity.setUser(userEntity);
-//        orderListRepository.save(orderListEntity);
-//    }
-//
-//    //주문내역 추가
-//    public void order(UserEntity userEntity, List<CartProductEntity> cartProductEntities){
-//        List<OrderItemEntity> orderItemEntities = new ArrayList<>(); // 주문내역에 추가할 아이템 리스트
-//
-//        List<OrderItemService> orderservice=new ArrayList<>();
-//        //장바구니의 각 상품을 주문아이템으로 변환하여 리스트에 추가(?)
-//        for(CartProductEntity cartProduct : cartProductEntities){
-//            OrderItemEntity orderItemEntity = createOrderItem(cartProduct.getProduct(),cartProduct.getQuantity());
-//            orderItemEntities.add(orderItemEntity);//리스트에 주문아이템을 추가
-//
-//        }
-//        //OrderListEntity orderListEntity = createOrderList(userEntity, orderItemEntities);
-//        //orderListEntity.set->금엑 낧
-//        orderListRepository.save(orderListEntity);
-//    }
-//
-//
-//
-//    //전체주문조회
-//
-//    public List<OrderListEntity> orderListEntities(){
-//        return orderListRepository.findAll();
-//    }
-//
-//    //특정주문 조회
-//    public OrderListEntity orderView (Long id){
-//        return orderListRepository.findById(id).get();
-//    }
-//
-//
-//    //주문 수정
-//    public void orderUPdate(Long id, OrderListEntity order){
-//        OrderListEntity Uorder = orderListRepository.findById(id).get();
-//        orderListRepository.save(Uorder);
-//    }
 
     ///////////////////////////////////////////////////////////////////////////////
     public void  settingProductDTO(OrderItemDTO orderItemDTO){
@@ -409,47 +295,6 @@ public class OrderItemService {
     }
 /////////////////////////////////////////////////////////////////////
 
-    public void addOrderitems(Long userid,Long productid,int count){
-        log.info("id{},product id{}, count : {}",userid, productid, count);
-
-        UserEntity user = userRepository.findById(userid).orElse(null);
-        log.error("user {}", user.getName());
-//        if (user == null) {
-//            throw new NoSuchElementException("해당 사용자를 찾을 수 없습니다.");
-//        }
-
-        ProductEntity product = productRepository.findById(productid).orElse(null);
-        log.error("product {}", product.getPPrice());
-//        if (product == null) {
-//            throw new NoSuchElementException("해당 상품을 찾을 수 없습니다.");
-//        }
-
-        // 주문 리스트 확인 또는 새로 생성
-        List<OrderListEntity> order = orderListRepository.findByUserId(userid);
-//                .orElseGet(() -> {
-//                    log.info("id{}",userid);
-//                    OrderListEntity newOrder = OrderListEntity.builder().user(user).build();
-//                    return orderListRepository.save(newOrder);
-//                });
-        log.error("order {}", order.get(0).getOrderdate());
-
-        // 주문 상품 생성
-        OrderItemEntity orderItemEntity = OrderItemEntity.builder()
-                .orderList((OrderListEntity) order)
-                .product(product)
-                .count(count)
-                // 다른 필요한 필드들을 여기에 추가하세요
-                .build();
-
-
-        try {
-            // 주문 상품 저장
-            orderItemRepository.save(orderItemEntity);
-
-        } catch ( Exception e) {
-            log.error("error {}", e.getMessage());
-        }
-    }
 
 
     public void removeOrderItem(Long userId,Long productId,Long orderlistid){
@@ -469,7 +314,7 @@ public class OrderItemService {
         }
         OrderListEntity orderlist = orderListRepository.findById(orderlistid).orElse(null);
         if (orderlist == null) {
-            throw new NoSuchElementException("해당 상품을 찾을 수 없습니다.");
+            throw new NoSuchElementException("해당 주문을 찾을 수 없습니다.");
         }
         orderListRepository.delete(orderlist);
     }
