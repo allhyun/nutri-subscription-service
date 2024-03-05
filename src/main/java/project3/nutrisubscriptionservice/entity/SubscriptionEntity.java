@@ -20,7 +20,7 @@ public class SubscriptionEntity {
     @Column(name="sub_id",nullable = false)
     private long  subId;
 
-    @OneToOne
+    @ManyToOne
     @JoinColumn(name="id")
     private UserEntity user;
 

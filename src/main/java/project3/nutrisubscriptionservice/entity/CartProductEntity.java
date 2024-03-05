@@ -1,5 +1,6 @@
 package project3.nutrisubscriptionservice.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonUnwrapped;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -21,6 +22,7 @@ public class CartProductEntity {
     @ManyToOne
     @MapsId("cartId")
     @JoinColumn(name = "cart_id")
+    @JsonIgnore
     private CartEntity cart;
 
     @ManyToOne
