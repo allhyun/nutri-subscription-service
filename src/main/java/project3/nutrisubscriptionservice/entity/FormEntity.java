@@ -1,5 +1,6 @@
 package project3.nutrisubscriptionservice.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -19,6 +20,7 @@ public class FormEntity {
     @Column(name = "result_id", nullable = false)
     private long resultId;
 
+    @JsonIgnore
     @ManyToOne
     @JoinColumn(name="id")
     private UserEntity user;
