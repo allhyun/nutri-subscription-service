@@ -1,25 +1,28 @@
 package project3.nutrisubscriptionservice.controller;
 
 
+import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
+import org.springframework.validation.FieldError;
 import org.springframework.web.bind.annotation.*;
-import project3.nutrisubscriptionservice.dto.OrderDTO;
-import project3.nutrisubscriptionservice.dto.OrderItemDTO;
-import project3.nutrisubscriptionservice.dto.OrderListDTO;
+import project3.nutrisubscriptionservice.dto.*;
 import project3.nutrisubscriptionservice.entity.OrderEntity;
 import project3.nutrisubscriptionservice.entity.OrderItemEntity;
 import project3.nutrisubscriptionservice.entity.OrderListEntity;
 import project3.nutrisubscriptionservice.entity.UserEntity;
 import project3.nutrisubscriptionservice.repository.OrderListRepository;
 import project3.nutrisubscriptionservice.repository.UserRepository;
+import project3.nutrisubscriptionservice.service.CartService;
 import project3.nutrisubscriptionservice.service.OrderItemService;
 import project3.nutrisubscriptionservice.service.OrderService;
 import project3.nutrisubscriptionservice.service.UserService;
@@ -41,32 +44,12 @@ public class OrderListController {
     OrderListRepository orderListRepository;
     @Autowired
     UserService userService;
+    @Autowired
+    CartService cartService;
 
 
 
     @GetMapping("/{userId}/order")
-//    public ResponseEntity<?> getMyOrders(@PathVariable Long userId) {
-//        UserEntity user = userRepository.findById(userId)
-//                .orElseThrow(() -> new RuntimeException("User not found for this id :: " + userId)); // 현재 로그인된 유저 이름 가져오기
-//
-//        // 주문 서비스를 이용하여 해당 유저의 주문 내역 조회
-//        List<OrderListEntity> orderHistory = orderListRepository.findByUser(user);
-//
-//        // Entity 목록을 DTO 목록으로 변환
-//        List<OrderListDTO> orderListDTOs = orderHistory.stream()
-//                .map(this::convertToOrderListDTO)
-//                .collect(Collectors.toList());
-//
-//        return ResponseEntity.ok(orderListDTOs);
-//
-//        // 주문 내역이 없는 경우 적절한 상태 메시지 반환
-//        if (orders.isEmpty()) {
-//            return ResponseEntity.notFound().build();
-//        }
-//
-//        return ResponseEntity.ok(orders);
-//    }
-//    }
 
     public ResponseEntity<OrderListDTO> getUserOrders(@PathVariable Long userId,
                                                       @RequestParam(value = "page", required = false) Integer page,
@@ -82,30 +65,6 @@ public class OrderListController {
             model.addAttribute("orderlist", OrderList);
             return ResponseEntity.ok(OrderList);
 
-//            if (OrderList==null) {
-//                throw new RuntimeException("login failed");
-//            }
-//            OrderListDTO orderList = OrderListDTO.builder()
-//                        .orderlistId(OrderListEntity.get().getOrderlistId())
-//                        .orderdate(OrderListEntity.get().getOrderdate())
-//                        .orderItems(OrderListEntity.get().getOrderItemEntitiy()
-//                                .stream()
-//                                .map(orderItemEntity -> OrderItemDTO.builder()
-//                                        .orderitemId(orderItemEntity.getOrderitemId())
-//                                        .orderprice(orderItemEntity.getOrderPrice())
-//                                        .build())
-//                                .collect(Collectors.toList()))
-//                        .build();
-//                return ResponseEntity.ok(orderList);
-//             else {
-//                log.info("주문 목록이 없음 or 조회 실패: userId = {}", userId);
-//                return ResponseEntity.notFound().build();
-//            }
-//        } catch (Exception e){
-//            log.info("주문 목록이 없음 or 조회 실패: userId = {}, error={}", userId, e.getMessage(),e);
-//            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
-//
-//        }
     }
 
 
@@ -146,12 +105,73 @@ public class OrderListController {
 //            return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
 //        }
 //    }
-    // 주문 생성
-    @PostMapping("/save")
-    public ResponseEntity<OrderItemEntity> save(@RequestBody OrderItemEntity orderItemEntity) {
-        OrderItemEntity savedOrder = orderItemService.addOrderItem(orderItemEntity);
-        return ResponseEntity.ok(savedOrder);
+    // 단일 상품 주문
+    @PreAuthorize("isAuthenticated()")
+    @PostMapping(value = "/order/add")
+    @ResponseBody
+    public ResponseEntity order(@RequestBody @Valid OrderListDTO orderDto,
+                                BindingResult bindingResult, Principal principal) {
+
+        if (bindingResult.hasErrors()) {
+            StringBuilder sb = new StringBuilder();
+            List<FieldError> fieldErrors = bindingResult.getFieldErrors();
+            for (FieldError fieldError : fieldErrors) {
+                sb.append(fieldError.getDefaultMessage());
+            }
+            return new ResponseEntity<String>(sb.toString(), HttpStatus.BAD_REQUEST);
+        }
+
+        Long orderId;
+        log.error("eeee {} ",  principal.getName());
+        try {
+            orderId = orderItemService.order(orderDto, principal.getName());
+        } catch (Exception e) {
+            log.error("Exception:", e);
+            return new ResponseEntity<String>(e.getMessage(), HttpStatus.BAD_REQUEST);
+        }
+        return new ResponseEntity<Long>(orderId, HttpStatus.OK);
     }
+
+
+//    @PostMapping(value = "/cart/orders")
+//    @ResponseBody
+//    public ResponseEntity orders(@RequestBody CartDTO cartDto, Principal principal) {
+//
+//        List<CartProductDTO> cartProductsDTO = cartDto.getCartProducts();
+//
+//        if (cartProductsDTO == null || cartProductsDTO.isEmpty()) {
+//            return new ResponseEntity<String>("주문할 상품을 선택해주세요.", HttpStatus.BAD_REQUEST);
+//        }
+//
+//        // 장바구니 주문 상품들을 각각 검증
+////        for (CartProductDTO cartOrderDto1 : cartProductsDTO) {
+////            if (!cartService.validateCartItem(cartOrderDto1.get(), principal.getName())) {
+////                return new ResponseEntity<String>("주문 권한이 없습니다.", HttpStatus.FORBIDDEN);
+////            }
+////        }
+//
+//        Long orderId = cartService.orderCartItem(cartOrderDtoList, principal.getName());
+//        return new ResponseEntity<Long>(orderId, HttpStatus.OK);
+//    }
+//
+
+
+
+
+
+
+  @PostMapping("/{userId}/add")
+     public ResponseEntity<Void> addOrderitems(@PathVariable Long userId, @RequestBody OrderItemDTO orderItemDTO) {
+        try {
+           orderItemService.addOrderitems(userId,orderItemDTO.getProduct_id(), orderItemDTO.getCount());
+            return ResponseEntity.ok().build();
+         } catch (Exception e) {
+           return ResponseEntity.notFound().build();
+         }
+       }
+
+
+
 
 
 }

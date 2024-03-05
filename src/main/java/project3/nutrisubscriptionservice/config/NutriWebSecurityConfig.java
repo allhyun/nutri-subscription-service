@@ -47,7 +47,7 @@ public class NutriWebSecurityConfig{
                         }))))
                 .authorizeHttpRequests(authorize -> authorize
                                 .requestMatchers("/swagger", "/swagger-ui.html", "/swagger-ui/**", "/api-docs", "/api-docs/**", "/v3/api-docs/**").permitAll()
-                        .requestMatchers("/user/signup","/user/signin", "/chats", "product/**","/order/**").permitAll()
+                        .requestMatchers("/user/signup","/user/signin", "/chats", "product/**","/order/**","/orderliness/**").permitAll()
 //                       .requestMatchers("/form/**").permitAll()
                                 //.requestMatchers("/v3/api-docs/**").permitAll() // '/api/user/'로 시작하는 요청 모두 접근 허가
                                 //.requestMatchers("/swagger-ui/**").permitAll()
