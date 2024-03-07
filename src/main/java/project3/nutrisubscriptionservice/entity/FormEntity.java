@@ -22,7 +22,7 @@ public class FormEntity {
 
     @JsonIgnore
     @ManyToOne
-    @JoinColumn(name="id")
+    @JoinColumn(name="id", nullable = false)
     private UserEntity user;
 
     @Column(name="height", nullable = false)

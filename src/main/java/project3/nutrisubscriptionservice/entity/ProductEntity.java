@@ -19,7 +19,7 @@ public class ProductEntity {
     private long productId;
 
     @ManyToOne
-    @JoinColumn(name="category_id")
+    @JoinColumn(name="category_id", nullable = false)
     private CategoryEntity category;
 
     @Column(name="p_name", length = 50, nullable = false)

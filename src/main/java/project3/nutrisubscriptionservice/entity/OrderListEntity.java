@@ -17,11 +17,11 @@ import java.util.List;
 public class OrderListEntity {
     @Id
     @GeneratedValue(strategy= GenerationType.IDENTITY)
-    @Column(name="orderlist_id",nullable = false)
+    @Column(name="orderlist_id", nullable = false)
     private long  orderlistId;
 
     @ManyToOne
-    @JoinColumn(name="id")
+    @JoinColumn(name="id", nullable = false)
     private UserEntity user;
 
     @Builder.Default

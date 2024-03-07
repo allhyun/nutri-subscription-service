@@ -21,13 +21,13 @@ public class CartProductEntity {
 
     @ManyToOne
     @MapsId("cartId")
-    @JoinColumn(name = "cart_id")
+    @JoinColumn(name = "cart_id", nullable = false)
     @JsonIgnore
     private CartEntity cart;
 
     @ManyToOne
     @MapsId("productId")
-    @JoinColumn(name = "product_id")
+    @JoinColumn(name = "product_id", nullable = false)
     private ProductEntity product;
 
     @Column(name = "quantity")

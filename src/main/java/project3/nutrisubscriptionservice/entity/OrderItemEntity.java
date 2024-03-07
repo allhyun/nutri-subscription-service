@@ -18,11 +18,11 @@ public class OrderItemEntity {
     private long orderitemId;
 
     @ManyToOne
-    @JoinColumn(name="product_id")
+    @JoinColumn(name="product_id", nullable = false)
     private ProductEntity product;
 
     @ManyToOne
-    @JoinColumn(name="orderlist_id")
+    @JoinColumn(name="orderlist_id", nullable = false)
     private OrderListEntity orderList;
 
     @Column(name="order_price",nullable = false)
