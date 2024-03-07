@@ -26,7 +26,7 @@ public class OrderEntity {
     private UserEntity user;
 
     @ManyToOne
-    @JoinColumn(name="product_id")
+    @JoinColumn(name="product_id", nullable = false)
     private ProductEntity product;
 
    @Column(name="total_price",nullable = false)

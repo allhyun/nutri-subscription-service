@@ -21,11 +21,11 @@ public class SubscriptionEntity {
     private long  subId;
 
     @ManyToOne
-    @JoinColumn(name="id")
+    @JoinColumn(name="id", nullable = false)
     private UserEntity user;
 
     @ManyToOne
-    @JoinColumn(name="orderlist_id")
+    @JoinColumn(name="orderlist_id", nullable = false)
     private OrderListEntity orderList;
 
     @Column(name="start_date",nullable = false)
