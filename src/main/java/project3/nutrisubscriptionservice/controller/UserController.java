@@ -46,7 +46,8 @@ public class UserController {
         try{
             UserEntity user=UserEntity.builder()
                     .email(userDTO.getEmail())
-                    .password(userDTO.getPassword())
+                    //.password(userDTO.getPassword())
+                    .password(passwordEncoder.encode(userDTO.getPassword()))//암호화
                     .name(userDTO.getName())
                     .phone(userDTO.getPhone())
                     .zipcode(userDTO.getZipcode())
