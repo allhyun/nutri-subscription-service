@@ -23,6 +23,8 @@ public class UserDTO {
     private String zipcode;
     private String address;
 
+    private String token;
+
     public UserDTO(UserEntity userEntity) {
         this.id=userEntity.getId();
         this.email=userEntity.getEmail();
