@@ -61,29 +61,6 @@ public class UserService {
 
 
 
-
-
-//    public Optional<String> getCurrentUsername() {
-//        Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-//        if (principal instanceof UserDetails) {
-//            return Optional.of(((UserDetails) principal).getUsername());
-//        } else if (principal instanceof String) {
-//            String username = principal.toString();
-//            if (!"anonymousUser".equals(username)) {
-//                return Optional.of(username);
-//            }
-//        }
-//        return Optional.empty();
-//    }
-
-
-//    public Optional<UserEntity> getMyUserWithAuthorities(){
-//        log.info(getCurrentUsername().toString());
-//        return getCurrentUsername()
-//                .map(email -> userRepository.findByEmail(email)); // 사용자 이름을 이메일로 가정
-//                //.orElse(Optional.empty());
-//    }
-
     public Optional<UserEntity> getMyUserWithAuthorities() {
         return getCurrentUsername().flatMap(id -> {
             try {

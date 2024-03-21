@@ -68,44 +68,6 @@ public class OrderListController {
 
     }
 
-
-    // 사용자 ID 별 주문 조회
-//    @GetMapping("/{userId}")
-//    public ResponseEntity<List<OrderListEntity>> findByMyUserId(@PathVariable Long userId) {
-//        try {
-//            UserEntity user = userRepository.findById(userId)
-//                    .orElseThrow(() -> new RuntimeException("User not found for this id :: " + userId));
-//
-//            List<OrderListEntity> orderHistory = orderListRepository.findByUser(user);
-//
-//            return new ResponseEntity<>(orderHistory, HttpStatus.OK);
-//        } catch (Exception e) {
-//            return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
-//        }
-//    }
-//    public ResponseEntity<?> findByMyUserId(@PathVariable Long userId) {
-//        try {
-//            UserEntity user = userRepository.findById(userId)
-//                    .orElseThrow(() -> new RuntimeException("User not found for this id :: " + userId));
-//
-//            List<OrderListEntity> orderHistory = orderListRepository.findByUser(user);
-//
-//            OrderListDTO orderHistoryDtoList = (OrderListDTO) orderHistory.stream()
-//                    .map(order->{return new OrderListDTO(order);})
-//                    .collect(Collectors.toList());
-//
-//            OrderListDTO orderListDTO = OrderListDTO.builder()
-//                    .orderlistId(orderHistoryDtoList.getOrderlistId())
-//                    .id(orderHistoryDtoList.getId())
-//                    .orderItems(orderHistoryDtoList.getOrderItems())
-//                    .orderdate(orderHistoryDtoList.getOrderdate())
-//                    .build();
-//
-//            return ResponseEntity.ok().body(orderListDTO);
-//        } catch (Exception e) {
-//            return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
-//        }
-//    }
     // 단일 상품 주문
     @PreAuthorize("isAuthenticated()")
     @PostMapping(value = "/order/add")
@@ -133,31 +95,34 @@ public class OrderListController {
         return new ResponseEntity<Long>(orderId, HttpStatus.OK);
     }
 
+// 혹시몰라서 남겨놨던 코드
+//   @PostMapping(value = "/cart/orders")
+//   public ResponseEntity<Long> placeOrder(@RequestBody List<OrderListDTO> orderDtoList, Long userId, @AuthenticationPrincipal UserDetails userDetails) {
+//       try {
+//           // 현재 로그인한 사용자의 이메일 가져오기
+//           String email = userDetails.getUsername();
+//
+//           // 주문을 생성하고 주문 ID를 가져옴
+//           Long orderId = orderItemService.orders(orderDtoList, userId);
+//
+////           // 주문 아이템 목록을 이용하여 주문 생성
+////           Long userId = orderItemService.orderFromCart(orderDtoList, userId);
+//
+//           return ResponseEntity.ok(orderId);
+//       } catch (Exception e) {
+//           return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
+//       }
+//   }
 
-   @PostMapping(value = "/cart/orders")
-   public ResponseEntity<Long> placeOrder(@RequestBody List<OrderListDTO> orderDtoList, Long userId, @AuthenticationPrincipal UserDetails userDetails) {
-       try {
-           // 현재 로그인한 사용자의 이메일 가져오기
-           String email = userDetails.getUsername();
-
-           // 주문을 생성하고 주문 ID를 가져옴
-           Long orderId = orderItemService.orders(orderDtoList, userId);
-
-//           // 주문 아이템 목록을 이용하여 주문 생성
-//           Long userId = orderItemService.orderFromCart(orderDtoList, userId);
-
-           return ResponseEntity.ok(orderId);
-       } catch (Exception e) {
-           return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
-       }
-   }
-
+    //주문목록 제거
     @DeleteMapping("/{userId}/remove")
     public ResponseEntity<Void> removeOrderItem(@PathVariable Long userId, @RequestParam Long productId,Long orderlistid) {
         orderItemService.removeOrderItem(userId, productId,orderlistid);
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
+
+    //장바구니 주문
     @PostMapping("/cart/orderlist")
     @ResponseBody
     public ResponseEntity ordersFromCart(@RequestBody List<CartDTO> cartDTO, Principal principal) {

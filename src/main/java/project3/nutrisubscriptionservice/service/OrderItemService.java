@@ -146,7 +146,9 @@ public class OrderItemService {
         OrderItemEntity orderItem = new OrderItemEntity();
         orderItem.setProduct(product);
         orderItem.setCount(count);
-        orderItem.setOrderPrice(product.getPPrice());
+        orderItem.setOrderPrice(product.getPPrice()*count);
+
+
 
         return orderItem;
     }
@@ -197,31 +199,26 @@ public class OrderItemService {
         }
         return orderListId;
     }
-    // 주문 취소
-//    public void orderCancel(Long orderId) {
-//        OrderListEntity order = orderListRepository.findById(orderId).orElseThrow(EntityNotFoundException::new);
-//        orderCancle();
+//혹시 몰라 남겨놓음
+//    //상품주문
+//    public Long orders(List<OrderListDTO> orderDtoList, Long userId ) {
+//
+//        // 로그인한 유저 조회
+//        UserEntity user = userRepository.findById(Long.valueOf(userId)).orElseThrow();
+//
+//        // orderDto 객체를 이용하여 item 객체와 count 값을 얻어낸 뒤, 이를 이용하여 OrderItem 객체(들) 생성
+//        List<OrderItemEntity> orderItem = new ArrayList<>();
+//        for (OrderListDTO orderDto : orderDtoList) {
+//            ProductEntity product = productRepository.findById(orderItem.get(0).getProduct().getProductId()).orElseThrow(EntityNotFoundException::new);
+//            OrderItemEntity orderItemEntity = createOrderItem(product, orderItem.get(0).getCount());
+//            orderItem.add(orderItemEntity);
+//        }
+//
+//        //Order Entity 클래스에 존재하는 createOrder 메소드로 Order 생성 및 저장
+//        OrderListEntity order = createOrder(user, orderItem);
+//        orderListRepository.save(order);
+//        return order.getUser().getId();
 //    }
-
-    //장바구니 상품주문
-    public Long orders(List<OrderListDTO> orderDtoList, Long userId ) {
-
-        // 로그인한 유저 조회
-        UserEntity user = userRepository.findById(Long.valueOf(userId)).orElseThrow();
-
-        // orderDto 객체를 이용하여 item 객체와 count 값을 얻어낸 뒤, 이를 이용하여 OrderItem 객체(들) 생성
-        List<OrderItemEntity> orderItem = new ArrayList<>();
-        for (OrderListDTO orderDto : orderDtoList) {
-            ProductEntity product = productRepository.findById(orderItem.get(0).getProduct().getProductId()).orElseThrow(EntityNotFoundException::new);
-            OrderItemEntity orderItemEntity = createOrderItem(product, orderItem.get(0).getCount());
-            orderItem.add(orderItemEntity);
-        }
-
-        //Order Entity 클래스에 존재하는 createOrder 메소드로 Order 생성 및 저장
-        OrderListEntity order = createOrder(user, orderItem);
-        orderListRepository.save(order);
-        return order.getUser().getId();
-    }
 
     // 장바구니 상품(들) 주문
     public Long orderCartItem(List<CartDTO> cartDTO, String userId) {
@@ -239,6 +236,9 @@ public class OrderItemService {
                 // 필요한 정보를 설정 (예: 상품, 수량 등)
                 orderItem.setProduct(cartProduct.getProduct());
                 orderItem.setCount(cartProduct.getQuantity());
+                orderItem.setOrderPrice(orderItem.getCount()*orderItem.getProduct().getPPrice());
+
+//                orderItem.setOrderList(orderl);
                 // 생성된 주문 항목을 리스트에 추가
                 orderItems.add(orderItem);
             }
@@ -247,43 +247,17 @@ public class OrderItemService {
             cartRepository.delete(cartEntity);
         }
 
+
         // 주문 생성 및 저장
         UserEntity user = userRepository.findById(Long.valueOf(userId)).orElseThrow();
         OrderListEntity order = createOrder(user, orderItems);
+        Long orderListId = order.getOrderlistId();
         orderListRepository.save(order);
 
         // 주문한 사용자의 ID 반환
         return order.getUser().getId();
 
 
-
-
-
-
-
-
-//        List<OrderItemEntity> orderlistDto = new ArrayList<>();
-//
-//        for (CartDTO cartDto : cartDTO) {
-//            CartEntity cartt = cartRepository.findById(cartDto.getCartId()).orElseThrow(EntityNotFoundException::new);
-//            OrderListDTO orderDto = new OrderListDTO();
-//            orderDto.setId(cartt.getUser().getId());
-//            orderlistDto.add(orderDto);
-//        }
-//        log.info("eeeee : {}", orderlistDto);
-//        // OrderList 객체 생성
-//
-//        //UserEntity user = userRepository.findById(Long.valueOf(userId)).orElseThrow();
-//        //OrderListEntity orderListEntity =  createOrder(user, orderItemList);
-//
-//        Long orderId = orders(orderlistDto, Long.valueOf(userId));
-//        log.info("eeeee : {},{}", orderlistDto, Long.valueOf(userId));
-//        // 주문한 장바구니 상품을 제거
-//        for (CartDTO cartDto : cartDTO) {
-//            CartEntity cartt = cartRepository.findById(cartDto.getCartId()).orElseThrow(EntityNotFoundException::new);
-//            cartRepository.delete(cartt);
-//        }
-//        return orderId;
     }
 
 
